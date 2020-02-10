@@ -1,10 +1,22 @@
 import express from 'express';
 import Joi from '@hapi/joi';
 import mongoose from 'mongoose';
-
+import multer from 'multer';
+import Courses from "../models/courses";
 
 const router = express.Router();
-import Courses from '../models/courses';
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'img-uploads')
+    },
+    filename: function (req, file, cb) {
+        cb(null,file.originalname); 
+    }
+});
+const imgUploads = multer({storage: storage});
+
+// const imgUploads = multer({ dest: 'img-uploads/' });
 // const courses = [
 //     {id:1, name: 'csc100'},
 //     {id:2, name: 'csc101'},
@@ -26,6 +38,7 @@ router.get('/all', (req, res, next) => {
                     return{
                         name: ppty.name,
                         code: ppty.code,
+                        quoteImage: ppty.quoteImage,
                         _id: ppty._id,
                         request: {
                             type: 'GET',
@@ -43,11 +56,13 @@ router.get('/all', (req, res, next) => {
 });
 
 // add a course
-router.post('/', (req, res, next) => {
+router.post('/', imgUploads.single('quoteImage'), (req, res, next) => {
+    console.log(req.file)
     const newCourse = new Courses({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
-        code: req.body.code
+        code: req.body.code,
+        quoteImage: req.file.path
     });
     newCourse
         .save()
@@ -58,6 +73,7 @@ router.post('/', (req, res, next) => {
                 courses: {
                     name: result.name,
                     code: result.code,
+                    quoteImage: result.quoteImage,
                     _id: result._id,
                     request: {
                         type: 'GET',
@@ -77,7 +93,7 @@ router.post('/', (req, res, next) => {
 router.get('/:id', (req, res, next) => {
     const courseId = req.params.id;
     Courses.findById(courseId)
-        .select('name code _id')
+        .select('name code _id quoteImage')
         .exec()
         .then(doc => {
             // console.log(doc);

@@ -15,6 +15,10 @@ mongoose.connect(
     }
 );
 
+//to make images in directory publicly available, use express.static with folder name
+//and to make browser ignore path we parse (image directory), add folder name at the start of 
+//middlerware ==> express
+app.use('/img-uploads', express.static('img-uploads'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(router);
