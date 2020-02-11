@@ -11,6 +11,9 @@
     "type": "git",
     "url": "git+https://github.com/biemIslam/ReactProjectApi.git"
   },
+  "engines": {
+    "node": "12.13.0"
+  },
   "author": "maryambello",
   "license": "ISC",
   "bugs": {
